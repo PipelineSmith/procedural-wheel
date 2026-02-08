@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/procedural-wheel.iml" filepath="$PROJECT_DIR$/.idea/procedural-wheel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../procedural_wheel/.idea/procedural-wheel.iml" filepath="$PROJECT_DIR$/../procedural_wheel/.idea/procedural-wheel.iml" />
     </modules>
   </component>
 </project>
