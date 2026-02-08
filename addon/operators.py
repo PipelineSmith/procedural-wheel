@@ -23,7 +23,7 @@ def _ensure_tire_material():
         links.new(principled.outputs["BSDF"], output.inputs["Surface"])
 
     principled.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1.0)
-    principled.inputs["Roughness"].default_value = 0.1
+    principled.inputs["Roughness"].default_value = 0.75
 
     return mat
 
@@ -35,11 +35,14 @@ class PROCEDURALWHEEL_OT_generate(bpy.types.Operator):
 
     def execute(self, context):
         # ---- parameters you can later expose in UI ----
-        major_radius = 0.6   # distance from axis to tire center (meters)
-        tire_radius  = 0.18  # tire "thickness" radius (meters)
         steps_view   = 32
         steps_render = 32
-        bulge        = tire_radius * 0.35
+
+        # Manual half-profile coordinates (XY plane, Z=0)
+        p0_co = (0.6, 0.0, 0.0)
+        p0_handle = (0.6, 0.09, 0.0)
+        p1_co = (0.42, 0.11, 0.0)
+        p1_handle = (0.62, 0.11, 0.0)
 
         # Create a 2-point Bezier curve (half profile), then revolve around Y
         curve_data = bpy.data.curves.new("TireProfileCurve", type="CURVE")
@@ -49,21 +52,21 @@ class PROCEDURALWHEEL_OT_generate(bpy.types.Operator):
         spline.use_cyclic_u = False
         spline.bezier_points.add(1)
 
-        top = spline.bezier_points[0]
-        bot = spline.bezier_points[1]
+        p0 = spline.bezier_points[0]
+        p1 = spline.bezier_points[1]
 
-        top.handle_left_type = "FREE"
-        top.handle_right_type = "FREE"
-        bot.handle_left_type = "FREE"
-        bot.handle_right_type = "FREE"
+        p0.handle_left_type = "FREE"
+        p0.handle_right_type = "FREE"
+        p1.handle_left_type = "FREE"
+        p1.handle_right_type = "FREE"
 
-        top.co = (major_radius, 0.0, tire_radius)
-        bot.co = (major_radius, 0.0, -tire_radius)
+        p0.co = p0_co
+        p1.co = p1_co
 
-        top.handle_left = top.co
-        bot.handle_right = bot.co
-        top.handle_right = (major_radius + bulge, 0.0, tire_radius * 0.5)
-        bot.handle_left = (major_radius + bulge, 0.0, -tire_radius * 0.5)
+        p0.handle_left = p0.co
+        p1.handle_right = p1.co
+        p0.handle_right = p0_handle
+        p1.handle_left = p1_handle
 
         # Create object in scene
         obj = bpy.data.objects.new("Procedural_Tire", curve_data)
